@@ -1,7 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Iansui&family=Kalam:wght@300;400;700&display=swap');
 @import "tailwindcss";
 
-/* Set up base font-families using Tailwind's layer */
+@theme {
+  --color-primary: #324e3d;
+  --color-secondary: #738a6e;
+  --color-background: #d9e4d7;
+  --color-text: #bfcfbc;
+
+  --font-title: 'Kalam', cursive;
+  --font-subtitle: 'Comic Neue', cursive;
+  --font-description: 'Iansui', sans-serif;
+}
+
+
+
+/* Set up base font-families using Tailwind's layer
 @layer base {
   html {
     font-family: 'subtitle', system-ui, sans-serif;
@@ -15,4 +28,4 @@
   .font-description {
     font-family: 'Iansui', sans-serif;
   }
-}
+} */
