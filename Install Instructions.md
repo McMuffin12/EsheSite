@@ -1,0 +1,4 @@
+- Clone the git repo
+- navigate to esheAstroSite
+- run the command "npm install" to install the reletive dependencies
+- to run the web server run the command "npm run dev"
