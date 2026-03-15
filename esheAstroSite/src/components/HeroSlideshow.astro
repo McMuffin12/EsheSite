@@ -1,0 +1,107 @@
+---
+const slides = [
+  {
+    image: "/Home/Hero/slide1.jpg",
+    caption: "Welcome to EsheSite!",
+  },
+  {
+    image: "/Home/Hero/slide2.jpg",
+    caption: "Discover our features",
+  },
+  {
+    image: "/Home/Hero/slide3.jpg",
+    caption: "Join us today",
+  },
+  {
+    image: "/Home/Hero/slide2.jpg",
+    caption: "Discover our features",
+  },
+];
+---
+<div id="hero-slideshow" class="relative w-full aspect-[16/6] min-h-[200px] flex items-center justify-center overflow-hidden rounded-lg shadow-lg m-[10px] box-border max-w-[calc(100vw-20px)]">
+  {slides.map((slide, idx) => (
+    <div
+      class={`absolute inset-0 transition-opacity duration-700 ${idx === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+      data-slide={idx}
+      aria-hidden={idx !== 0}
+    >
+      <img src={slide.image} alt="" class="w-full h-full object-cover" />
+      <div class="absolute inset-0 flex items-end justify-center pb-12">
+        <span class="text-white px-10 py-6 rounded font-title font-bold text-5xl md:text-7xl text-center drop-shadow-lg">
+          {slide.caption}
+        </span>
+      </div>
+    </div>
+  ))}
+  <div id="slideshow-dots" class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+    {slides.map((_, idx) => (
+      <button
+        type="button"
+        class="w-2 h-2 rounded-full border-2 border-white bg-white/60 hover:bg-white/90 transition-colors duration-200"
+        data-dot={idx}
+        aria-label={`Go to slide ${idx + 1}`}
+        style="outline:none;"
+      ></button>
+    ))}
+  </div>
+  </div>
+<script type="module">
+  const slideshow = document.getElementById('hero-slideshow');
+  const slides = slideshow.querySelectorAll('[data-slide]');
+  const dots = document.querySelectorAll('#slideshow-dots [data-dot]');
+  let current = 0;
+  let interval = null;
+
+  function showSlide(idx) {
+    slides.forEach((slide, i) => {
+      if (i === idx) {
+        slide.classList.add('opacity-100', 'z-10');
+        slide.classList.remove('opacity-0', 'z-0');
+        slide.setAttribute('aria-hidden', 'false');
+      } else {
+        slide.classList.remove('opacity-100', 'z-10');
+        slide.classList.add('opacity-0', 'z-0');
+        slide.setAttribute('aria-hidden', 'true');
+      }
+    });
+    updateDots();
+  }
+
+  function updateDots() {
+    dots.forEach((dot, i) => {
+      if (i === current) {
+        dot.classList.add('bg-white', 'border-primary', 'scale-110');
+        dot.classList.remove('bg-white/60');
+      } else {
+        dot.classList.remove('bg-white', 'border-primary', 'scale-110');
+        dot.classList.add('bg-white/60');
+      }
+    });
+  }
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      current = i;
+      showSlide(current);
+      resetInterval();
+    });
+  });
+
+  function nextSlide() {
+    current = (current + 1) % slides.length;
+    showSlide(current);
+  }
+
+  function prevSlide() {
+    current = (current - 1 + slides.length) % slides.length;
+    showSlide(current);
+  }
+
+  function resetInterval() {
+    clearInterval(interval);
+    interval = setInterval(nextSlide, 5000);
+  }
+
+  updateDots();
+  interval = setInterval(nextSlide, 5000);
+</script>
