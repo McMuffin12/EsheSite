@@ -1,0 +1,12 @@
+---
+// Props: items (array of { href, imgSrc, imgAlt, label })
+const { items = [] } = Astro.props;
+---
+<div class="mt-2 w-80 bg-secondary border border-text rounded shadow-lg">
+  {items.map((item: { href: string; imgSrc: string; imgAlt: string; label: string; }) => (
+    <a href={item.href} class="flex items-center px-4 py-2 hover:bg-primary" style="text-decoration: none;">
+      <img src={item.imgSrc} alt={item.imgAlt} class="w-16 h-16 object-cover rounded mr-3" />
+      <span>{item.label}</span>
+    </a>
+  ))}
+</div>

@@ -1,0 +1,68 @@
+---
+import DropdownMenu from "./DropdownMenu.astro";
+---
+<nav class="bg-secondary">
+  <div class="w-full px-4 flex justify-center">
+    <div class="flex h-16 items-center w-full max-w-7xl">
+      <div class="flex items-center flex-shrink-0">
+        <!-- Logo -->
+        <a href="/" class="flex items-center font-bold text-xl mr-8 min-w-[300px] max-w-[400px] h-16">
+          <img src="/Shared/RECTANGLE LOGO COLOR.png" alt="Lifes Little Things Logo" class="object-contain h-full w-auto" />
+        </a>
+        <!-- Navigation Links -->
+        <div class="flex-1 flex items-center font-subtitle font-bold text-text ml-4 min-w-0">
+          <div class="flex space-x-4 items-center flex-grow justify-center min-w-0">
+            <a href="/" class="px-3 py-2 rounded hover:bg-primary transition">Home</a>
+            <div class="relative group flex items-center">
+            <button class="px-3 py-2 rounded hover:bg-primary transition flex items-center">
+              Free Crochet Patterns
+              <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div class="absolute left-0 top-full opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition z-50">
+              <DropdownMenu
+                items={[
+                  { href: "/patterns/baby", imgSrc: "/NavBar/test1.jpg", imgAlt: "Baby", label: "Baby" },
+                  { href: "/patterns/blankets", imgSrc: "/NavBar/test2.jpg", imgAlt: "Blankets", label: "Blankets" },
+                  { href: "/patterns/garments", imgSrc: "/NavBar/test3.jpg", imgAlt: "Garments", label: "Garments" },
+                  { href: "/patterns/stitch-library", imgSrc: "/NavBar/test4.jpg", imgAlt: "Stitch Library", label: "Stitch Library" },
+                  { href: "/patterns/homeware", imgSrc: "/NavBar/test1.jpg", imgAlt: "Homeware", label: "Homeware" },
+                  { href: "/patterns/all", imgSrc: "/NavBar/test1.jpg", imgAlt: "All Free Patterns", label: "All Free Patterns" },
+                ]}
+              />
+            </div>
+          </div>
+            <a href="/videos" class="px-3 py-2 rounded hover:bg-primary transition">Video Tutorials</a>
+            <a href="/store" class="px-3 py-2 rounded hover:bg-primary transition">Store</a>
+            <a href="/about" class="px-3 py-2 rounded hover:bg-primary transition">About</a>
+            <div class="relative group flex items-center">
+            <button class="px-3 py-2 rounded hover:bg-primary transition flex items-center">
+              The Crochet Community
+              <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div class="absolute left-0 top-full opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition z-50">
+              <DropdownMenu
+                items={[ 
+                  { href: "/community/forum", imgSrc: "/Home/Hero/forum.jpg", imgAlt: "Forum", label: "Forum" },
+                  { href: "/community/events", imgSrc: "/Home/Hero/events.jpg", imgAlt: "Events", label: "Events" },
+                ]}
+              />
+            </div>
+          </div>
+          </div>
+      </div>
+      <!-- Right side (icons, cart, etc.) hidden till shop implementation -->
+      {/**
+      <div class="flex items-center space-x-4 ">
+        <a href="/search" class="px-3 py-2 rounded hover:bg-primary transition">🔍</a>
+        <a href="/cart" class="px-3 py-2 rounded hover:bg-primary transition">🛒</a>
+      </div>
+      */}
+    </div>
+  </div>
+</nav>
+
+
