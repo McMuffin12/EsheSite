@@ -18,7 +18,7 @@ const slides = [
   },
 ];
 ---
-<div id="hero-slideshow" class="relative w-full aspect-[16/6] min-h-[200px] flex items-center justify-center overflow-hidden rounded-lg shadow-lg m-[10px] box-border max-w-[calc(100vw-20px)]">
+<div id="hero-slideshow" class="relative w-full aspect-16/6 min-h-50 flex items-center justify-center overflow-hidden rounded-lg shadow-lg m-2.5 box-border max-w-[calc(100vw-20px)]">
   {slides.map((slide, idx) => (
     <div
       class={`absolute inset-0 transition-opacity duration-700 ${idx === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
