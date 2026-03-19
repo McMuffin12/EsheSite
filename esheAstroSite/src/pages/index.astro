@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar.astro";
 import "../styles/global.css";
 import Footer from "../components/Footer.astro";
 import HeroSlideshow from "../components/HeroSlideshow.astro";
+import HeroBanner from "../components/HeroBanner.astro";
 ---
 
 <html lang="en">
@@ -17,6 +18,13 @@ import HeroSlideshow from "../components/HeroSlideshow.astro";
 	<body class = "bg-background">
 		<Navbar />
 		<HeroSlideshow />
+		<HeroBanner
+			image="\Home\\HeroBanners\\MonkeyPuppet.jpeg"
+			title="Keychain Puppets!!"
+			subtitle="Check out our new line of keychain puppets, perfect for adding a touch of fun to your keys or bags!"
+			description="Get your today!"
+			align="left"
+		/>
 		<h1 class="text-3xl font-title underline text-primary">Astro</h1>
 		<Footer />
 	</body>

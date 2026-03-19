@@ -1,0 +1,17 @@
+---
+const { image, title, subtitle, description = "", align = "left" } = Astro.props;
+---
+<section class="py-8 m-10">
+  <div class={`max-w-500 mx-auto flex flex-col md:flex-row ${align === "right" ? "md:flex-row-reverse" : "md:flex-row"} items-stretch rounded-2xl shadow-lg overflow-hidden bg-secondary`}>
+    <div class="md:w-1/2 w-full flex items-center justify-center p-0 md:p-8">
+      <div class="w-full h-full flex flex-col justify-center p-8">
+        <h1 class="font-title font-bold text-5xl mb-2 text-primary">{title}</h1>
+        <h2 class="font-subtitle text-2xl md:text-3xl mb-4 text-text">{subtitle}</h2>
+        {description && <p class="font-description text-lg md:text-xl text-text/90">{description}</p>}
+      </div>
+    </div>
+    <div class="md:w-1/2 w-full flex items-center justify-center bg-transparent p-0 md:p-8">
+      <img src={image} alt={title} class="rounded-2xl shadow-lg h-full w-full object-contain bg-secondary" loading="lazy" />
+    </div>
+  </div>
+</section>
