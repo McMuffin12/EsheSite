@@ -1,25 +1,32 @@
 ---
-const slides = [
+interface Slide {
+  image: string;
+  caption: string;
+}
+
+const defaultSlides: Slide[] = [
   {
-    image: "/Home/Hero/slide1.jpg",
+    image: "/Home/HeroSlideshow/slide1.jpg",
     caption: "Welcome to EsheSite!",
   },
   {
-    image: "/Home/Hero/slide2.jpg",
+    image: "/Home/HeroSlideshow/slide2.jpg",
     caption: "Discover our features",
   },
   {
-    image: "/Home/Hero/slide3.jpg",
+    image: "/Home/HeroSlideshow/slide3.jpg",
     caption: "Join us today",
   },
   {
-    image: "/Home/Hero/slide2.jpg",
+    image: "/Home/HeroSlideshow/slide2.jpg",
     caption: "Discover our features",
   },
 ];
+
+const { slides = defaultSlides }: { slides?: Slide[] } = Astro.props;
 ---
 <div id="hero-slideshow" class="relative w-full aspect-16/6 min-h-50 flex items-center justify-center overflow-hidden rounded-lg shadow-lg m-2.5 box-border max-w-[calc(100vw-20px)]">
-  {slides.map((slide, idx) => (
+  {slides.map((slide: Slide, idx: number) => (
     <div
       class={`absolute inset-0 transition-opacity duration-700 ${idx === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
       data-slide={idx}
@@ -34,7 +41,7 @@ const slides = [
     </div>
   ))}
   <div id="slideshow-dots" class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-    {slides.map((_, idx) => (
+    {slides.map((_: Slide, idx: number) => (
       <button
         type="button"
         class="w-2 h-2 rounded-full border-2 border-white bg-white/60 hover:bg-white/90 transition-colors duration-200"
