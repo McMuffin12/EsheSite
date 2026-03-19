@@ -12,20 +12,3 @@
   --font-description: 'Iansui', sans-serif;
 }
 
-
-
-/* Set up base font-families using Tailwind's layer
-@layer base {
-  html {
-    font-family: 'subtitle', system-ui, sans-serif;
-  }
-  .font-title {
-    font-family: 'Kalam', cursive;
-  }
-  .font-subtitle {
-    font-family: 'Comic Neue', cursive;
-  }
-  .font-description {
-    font-family: 'Iansui', sans-serif;
-  }
-} */
