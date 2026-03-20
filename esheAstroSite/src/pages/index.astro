@@ -1,34 +1,22 @@
 ---
-import Navbar from "../components/Navbar.astro";
-import "../styles/global.css";
-import Footer from "../components/Footer.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
 import HeroSlideshow from "../components/HeroSlideshow.astro";
 import HeroBanner from "../components/HeroBanner.astro";
 import ImageGallery from "../components/ImageGallery.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Home:Life's Little Things</title>
-	</head>
-	<body class = "bg-background">
-		<Navbar />
-		<HeroSlideshow slides = {[
-  			{
-    			image: "/Home/HeroSlideshow/beanieSlide.jpeg",
-    			caption: "Beanies and More!",
-  			},
-  			{
-    			image: "/Home/HeroSlideshow/camoDragonSlide.jpeg",
-    			caption: "Plushies and More!",
-  			}
-			]}/>
-		<section class="my-12 px-4">
+<BaseLayout title="Home:Life's Little Things">
+	<HeroSlideshow slides={[
+		{
+			image: "/Home/HeroSlideshow/beanieSlide.jpeg",
+			caption: "Beanies and More!",
+		},
+		{
+			image: "/Home/HeroSlideshow/camoDragonSlide.jpeg",
+			caption: "Plushies and More!",
+		}
+	]} />
+	<section class="my-12 px-4">
 		<h2 class="font-title text-primary text-6xl font-bold mb-6 text-center">Featured</h2>
 		<HeroBanner
 			image="/Home/HeroBanners/MonkeyPuppet.jpeg"
@@ -37,32 +25,30 @@ import ImageGallery from "../components/ImageGallery.astro";
 			description="Get your today!"
 			align="left"
 		/>
-		</section>
-		<section class="my-12 px-4">
-			<h2 class="font-title text-primary text-6xl font-bold mb-6 text-center">Gallery</h2>
-			<ImageGallery images={[
-				{
-					src: '/Shared/GalleryImages/opossumPuppet.jpeg',
-					alt: 'Opossum Puppet Keychain',
-					label: 'Oppossum Keychain',
-				},
-				{
-					src: '/Shared/GalleryImages/yellowDressCow.jpeg',
-					alt: 'Crochet whale keychains',
-					label: 'Callie the Cow',
-				},
-				{
-					src: '/Shared/GalleryImages/pelicanAndCrab.jpeg',
-					alt: 'Pelican and Crab',
-					label: 'Pelican and Crab',
-				},
-				{
-					src: '/Shared/GalleryImages/smallBlueDragon.jpeg',
-					alt: 'Small Blue Dragon',
-					label: 'Small Blue Dragon',
-				},
-			]} />
-		</section>
-		<Footer />
-	</body>
-</html>
+	</section>
+	<section class="my-12 px-4">
+		<h2 class="font-title text-primary text-6xl font-bold mb-6 text-center">Gallery</h2>
+		<ImageGallery images={[
+			{
+				src: '/Shared/GalleryImages/opossumPuppet.jpeg',
+				alt: 'Opossum Puppet Keychain',
+				label: 'Oppossum Keychain',
+			},
+			{
+				src: '/Shared/GalleryImages/yellowDressCow.jpeg',
+				alt: 'Crochet whale keychains',
+				label: 'Callie the Cow',
+			},
+			{
+				src: '/Shared/GalleryImages/pelicanAndCrab.jpeg',
+				alt: 'Pelican and Crab',
+				label: 'Pelican and Crab',
+			},
+			{
+			src: '/Shared/GalleryImages/smallBlueDragon.jpeg',
+				alt: 'Small Blue Dragon',
+				label: 'Small Blue Dragon',
+			},
+		]} />
+	</section>
+</BaseLayout>
