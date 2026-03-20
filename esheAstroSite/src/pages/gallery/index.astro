@@ -1,0 +1,13 @@
+---
+// this page is a gallery of plushies and keychains and other projects
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ImageGallery from "../../components/ImageGallery.astro";
+import gallery from "./gallery.json";
+---
+
+<BaseLayout title="Gallery">
+  <section class="my-12 px-4">
+    <h1 class="text-6xl font-title font-bold text-primary text-center mb-6">Gallery</h1>
+    <ImageGallery images={gallery} />
+  </section>
+</BaseLayout>
