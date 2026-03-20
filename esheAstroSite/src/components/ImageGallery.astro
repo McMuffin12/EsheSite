@@ -1,0 +1,10 @@
+---
+const { images } = Astro.props;
+import ImageCard from "../components/ImageCard.astro";
+---
+<!-- Wrap to next row after 4 -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+  {images.map((img: { src: string; alt: string; label: string; }) => (
+    <ImageCard src={img.src} alt={img.alt} label={img.label} />
+  ))}
+</div>

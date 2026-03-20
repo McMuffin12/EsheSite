@@ -4,6 +4,7 @@ import "../styles/global.css";
 import Footer from "../components/Footer.astro";
 import HeroSlideshow from "../components/HeroSlideshow.astro";
 import HeroBanner from "../components/HeroBanner.astro";
+import ImageGallery from "../components/ImageGallery.astro";
 ---
 
 <html lang="en">
@@ -25,6 +26,31 @@ import HeroBanner from "../components/HeroBanner.astro";
 			description="Get your today!"
 			align="left"
 		/>
+		<section class="my-12 px-4">
+			<h2 class="font-title text-4xl font-bold mb-6 text-center">Gallery</h2>
+			<ImageGallery images={[
+				{
+					src: '/Shared/GalleryImages/opossumPuppet.jpeg',
+					alt: 'Opossum Puppet Keychain',
+					label: 'Oppossum Keychain',
+				},
+				{
+					src: '/Shared/GalleryImages/yellowDressCow.jpeg',
+					alt: 'Crochet whale keychains',
+					label: 'Callie the Cow',
+				},
+				{
+					src: '/Shared/GalleryImages/pelicanAndCrab.jpeg',
+					alt: 'Pelican and Crab',
+					label: 'Pelican and Crab',
+				},
+				{
+					src: '/Shared/GalleryImages/smallBlueDragon.jpeg',
+					alt: 'Small Blue Dragon',
+					label: 'Small Blue Dragon',
+				},
+			]} />
+		</section>
 		<h1 class="text-3xl font-title underline text-primary">Astro</h1>
 		<Footer />
 	</body>

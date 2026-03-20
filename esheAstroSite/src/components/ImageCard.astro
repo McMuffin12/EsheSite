@@ -1,0 +1,10 @@
+---
+// ImageCard.astro: A single square image card with overlay tag
+const { src, alt, label } = Astro.props;
+---
+<div class="relative aspect-square rounded-xl shadow-lg overflow-hidden">
+  <img src={src} alt={alt} class="w-full h-full object-cover" />
+  <span class="absolute bottom-2 left-2 bg-black/60 text-white px-3 py-1 rounded text-sm font-medium">
+    {label}
+  </span>
+</div>
