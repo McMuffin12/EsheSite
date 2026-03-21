@@ -1,0 +1,180 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Contact Me:Life's Little Things">
+	<section class="min-h-screen bg-background">
+	<div class="max-w-2xl mx-auto px-4 py-16">
+		<h1 class="text-5xl font-bold mb-2 text-primary font-title">Contact</h1>
+		<p class="text-secondary mb-12 font-subtitle text-lg">Get in touch with me for commissions, Q&A, or feedback</p>
+		
+		<form id="contact-form" class="space-y-6 bg-white rounded-lg shadow-lg p-8 border-2 border-secondary">
+			<div>
+				<label for="type" class="block font-medium mb-3 text-primary font-subtitle">What's this about?</label>
+				<select id="type" name="type" class="w-full border-2 border-secondary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-primary" required>
+					<option value="qa">Q&amp;A</option>
+					<option value="feedback">Feedback</option>
+					<option value="commission">Commission</option>
+				</select>
+			</div>
+
+			<div>
+				<label for="email" class="block font-medium mb-3 text-primary font-subtitle">Your Email</label>
+				<input id="email" name="email" type="email" class="w-full border-2 border-secondary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-primary" required />
+			</div>
+
+			<!-- Q&A Fields -->
+			<div id="qa-fields" class="hidden space-y-4">
+				<div>
+					<label for="question" class="block font-medium mb-3 text-primary font-subtitle">Your Question</label>
+					<textarea id="question" name="question" class="w-full border-2 border-secondary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-primary" rows="5"></textarea>
+				</div>
+			</div>
+
+			<!-- Feedback Fields -->
+			<div id="feedback-fields" class="hidden space-y-4">
+				<div>
+					<label for="feedbackType" class="block font-medium mb-3 text-primary font-subtitle">Feedback Type</label>
+					<select id="feedbackType" name="feedbackType" class="w-full border-2 border-secondary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-primary">
+						<option value="general">General</option>
+						<option value="bug">Bug Report</option>
+						<option value="suggestion">Suggestion</option>
+					</select>
+				</div>
+				<div>
+					<label for="message" class="block font-medium mb-3 text-primary font-subtitle">Message</label>
+					<textarea id="message" name="message" class="w-full border-2 border-secondary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-primary" rows="5"></textarea>
+				</div>
+			</div>
+
+			<!-- Commission Fields -->
+			<div id="commission-fields" class="hidden space-y-4">
+				<div>
+					<label for="projectDetails" class="block font-medium mb-3 text-primary font-subtitle">Project Details</label>
+					<textarea id="projectDetails" name="projectDetails" class="w-full border-2 border-secondary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-primary" rows="5"></textarea>
+				</div>
+				<div>
+					<label for="budget" class="block font-medium mb-3 text-primary font-subtitle">Budget</label>
+					<input id="budget" name="budget" type="text" class="w-full border-2 border-secondary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-primary" />
+				</div>
+			</div>
+
+			<!-- File Upload -->
+			<div>
+				<label for="attachment" class="block font-medium mb-3 text-primary font-subtitle">Attach an image (optional, max 5MB)</label>
+				<input id="attachment" name="attachment" type="file" accept="image/png,image/jpeg,image/jpg" class="w-full border-2 border-secondary rounded-lg px-4 py-3 file:bg-primary file:border-0 file:text-white file:px-4 file:py-2 file:rounded file:cursor-pointer hover:file:bg-secondary transition-colors text-primary" />
+				<p id="file-error" class="text-red-600 text-sm mt-2 hidden font-subtitle"></p>
+			</div>
+
+			<button type="submit" id="submit-btn" class="w-full bg-primary text-white px-6 py-4 rounded-lg font-bold font-subtitle text-lg hover:bg-secondary transition-colors duration-200 shadow-md">Send Message</button>
+			
+			<div id="form-result" class="mt-6 text-center text-base font-medium font-subtitle hidden"></div>
+		</form>
+	</div>
+</section>
+</BaseLayout>
+
+<script is:inline>
+	// Dynamic field display
+	const typeSelect = document.getElementById('type');
+	const qaFields = document.getElementById('qa-fields');
+	const feedbackFields = document.getElementById('feedback-fields');
+	const commissionFields = document.getElementById('commission-fields');
+	const form = document.getElementById('contact-form');
+	const fileInput = document.getElementById('attachment');
+	const fileError = document.getElementById('file-error');
+	const resultDiv = document.getElementById('form-result');
+	const submitBtn = document.getElementById('submit-btn');
+
+	function updateFields() {
+		qaFields.classList.add('hidden');
+		feedbackFields.classList.add('hidden');
+		commissionFields.classList.add('hidden');
+		if (typeSelect.value === 'qa') {
+			qaFields.classList.remove('hidden');
+		} else if (typeSelect.value === 'feedback') {
+			feedbackFields.classList.remove('hidden');
+		} else if (typeSelect.value === 'commission') {
+			commissionFields.classList.remove('hidden');
+		}
+	}
+	typeSelect.addEventListener('change', updateFields);
+	updateFields();
+
+	// File validation
+	fileInput.addEventListener('change', () => {
+		fileError.classList.add('hidden');
+		fileError.textContent = '';
+		const file = fileInput.files[0];
+		if (file) {
+			const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+			if (!allowedTypes.includes(file.type)) {
+				fileError.textContent = 'Only PNG and JPEG images are allowed.';
+				fileError.classList.remove('hidden');
+				fileInput.value = '';
+			} else if (file.size > 5 * 1024 * 1024) {
+				fileError.textContent = 'File size must be 5MB or less.';
+				fileError.classList.remove('hidden');
+				fileInput.value = '';
+			}
+		}
+	});
+
+	// Form submission with feedback
+	form.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		fileError.classList.add('hidden');
+		resultDiv.textContent = '';
+		submitBtn.disabled = true;
+		submitBtn.textContent = 'Sending...';
+
+		// Validate file again before submit
+		const file = fileInput.files[0];
+		if (file) {
+			const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+			if (!allowedTypes.includes(file.type)) {
+				fileError.textContent = 'Only PNG and JPEG images are allowed.';
+				fileError.classList.remove('hidden');
+				submitBtn.disabled = false;
+				submitBtn.textContent = 'Send Message';
+				return;
+			} else if (file.size > 5 * 1024 * 1024) {
+				fileError.textContent = 'File size must be 5MB or less.';
+				fileError.classList.remove('hidden');
+				submitBtn.disabled = false;
+				submitBtn.textContent = 'Send Message';
+				return;
+			}
+		}
+
+		const formData = new FormData(form);
+		try {
+			const response = await fetch('/api/contact', {
+				method: 'POST',
+				body: formData,
+			});
+			const data = await response.json();
+			resultDiv.classList.remove('hidden');
+			if (!response.ok) {
+				resultDiv.className = 'mt-6 p-4 text-center text-base font-medium font-subtitle bg-red-100 border-2 border-red-400 text-red-700 rounded-lg';
+				resultDiv.textContent = data.error || 'Failed to send message.';
+			} else {
+				resultDiv.className = 'mt-6 p-4 text-center text-base font-medium font-subtitle bg-green-100 border-2 border-green-400 text-green-700 rounded-lg';
+				resultDiv.textContent = 'Message sent successfully! We\'ll get back to you soon.';
+				form.reset();
+				updateFields();
+				setTimeout(() => {
+					resultDiv.classList.add('hidden');
+				}, 5000);
+			}
+		} catch (err) {
+			console.error('Fetch error:', err);
+			resultDiv.classList.remove('hidden');
+			resultDiv.className = 'mt-6 p-4 text-center text-base font-medium font-subtitle bg-red-100 border-2 border-red-400 text-red-700 rounded-lg';
+			resultDiv.textContent = 'Network error. Please try again.';
+		} finally {
+			submitBtn.disabled = false;
+			submitBtn.textContent = 'Send Message';
+		}
+	});
+</script>
