@@ -1,0 +1,227 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+interface Variation {
+  variationId: string;
+  name: string;
+  priceCents: number;
+  currency: string;
+  available: number;
+  inStock: boolean;
+}
+
+interface Product {
+  itemId: string;
+  name: string;
+  description: string;
+  categoryId: string;
+  categorySlug: string;
+  imageUrl: string | null;
+  variations: Variation[];
+}
+
+interface Category {
+  id: string;
+  slug: string;
+  name: string;
+}
+
+interface CatalogData {
+  categories: Category[];
+  products: Product[];
+  updatedAt: string;
+}
+
+const { categorySlug } = Astro.params;
+
+// Fetch catalog data server-side
+let catalogData: CatalogData | null = null;
+let error: string | null = null;
+
+try {
+  const response = await fetch(`${Astro.url.origin}/api/store/catalog`);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  catalogData = await response.json();
+} catch (err) {
+  error = err instanceof Error ? err.message : "Failed to load catalog";
+}
+
+const categories = catalogData?.categories ?? [];
+const allProducts = catalogData?.products ?? [];
+
+// Find current category
+const currentCategory = categories.find((c) => c.slug === categorySlug);
+
+// Filter products for this category
+const products = currentCategory
+  ? allProducts.filter((p) => p.categorySlug === categorySlug)
+  : [];
+
+function formatPrice(cents: number): string {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+---
+
+<BaseLayout title={`${currentCategory?.name ?? 'Category'} - Life's Little Things Store`}>
+  <section class="my-12 px-4">
+    <div class="max-w-7xl mx-auto">
+      {currentCategory ? (
+        <>
+          <h1 class="text-6xl font-title font-bold text-primary text-center mb-6">
+            {currentCategory.name}
+          </h1>
+          <p class="text-center text-text mb-8">
+            Browse our {currentCategory.name.toLowerCase()} collection
+          </p>
+        </>
+      ) : (
+        <div class="text-center mb-8">
+          <h1 class="text-6xl font-title font-bold text-primary mb-4">Category Not Found</h1>
+          <a href="/store" class="text-primary hover:underline">← Back to Store</a>
+        </div>
+      )}
+
+      {error && (
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+          <p>Error loading catalog: {error}</p>
+        </div>
+      )}
+
+      <!-- Category Navigation -->
+      {categories.length > 0 && (
+        <div class="flex flex-wrap justify-center gap-4 mb-12">
+          <a
+            href="/store"
+            class="px-6 py-3 rounded-full bg-secondary text-text font-bold hover:bg-primary hover:text-white transition"
+          >
+            All Items
+          </a>
+          {categories.map((cat) => (
+            <a
+              href={`/store/${cat.slug}`}
+              class={`px-6 py-3 rounded-full font-bold transition ${
+                cat.slug === categorySlug
+                  ? "bg-primary text-white"
+                  : "bg-secondary text-text hover:bg-primary hover:text-white"
+              }`}
+            >
+              {cat.name}
+            </a>
+          ))}
+        </div>
+      )}
+
+      <!-- Products Grid -->
+      {products.length === 0 && !error ? (
+        <div class="text-center py-12">
+          <p class="text-xl text-text">No products in this category.</p>
+          <a href="/store" class="text-primary hover:underline mt-4 inline-block">
+            Browse all items
+          </a>
+        </div>
+      ) : (
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {products.map((product) => {
+            const firstVariation = product.variations[0];
+            const hasStock = product.variations.some((v) => v.inStock);
+            return (
+              <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+                <div class="aspect-square bg-gray-100 relative">
+                  {product.imageUrl ? (
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name}
+                      class="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div class="w-full h-full flex items-center justify-center text-gray-400">
+                      <span>No Image</span>
+                    </div>
+                  )}
+                  {!hasStock && (
+                    <div class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                      Out of Stock
+                    </div>
+                  )}
+                </div>
+                <div class="p-4">
+                  <h3 class="font-bold text-lg text-text mb-1">{product.name}</h3>
+                  <p class="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
+                  <div class="flex items-center justify-between">
+                    <span class="text-primary font-bold text-xl">
+                      {formatPrice(firstVariation?.priceCents ?? 0)}
+                    </span>
+                    {hasStock ? (
+                      <button
+                        class="add-to-cart-btn bg-primary text-white px-4 py-2 rounded font-bold hover:bg-opacity-90 transition"
+                        data-item-id={product.itemId}
+                        data-variation-id={firstVariation?.variationId}
+                        data-name={product.name}
+                        data-price={firstVariation?.priceCents}
+                      >
+                        Add to Cart
+                      </button>
+                    ) : (
+                      <span class="text-gray-400 text-sm">Out of Stock</span>
+                    )}
+                  </div>
+                  {product.variations.length > 1 && (
+                    <p class="text-xs text-gray-500 mt-2">
+                      {product.variations.length} options available
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  interface CartItem {
+    itemId: string;
+    variationId: string;
+    name: string;
+    priceCents: number;
+    quantity: number;
+  }
+
+  function getCart(): CartItem[] {
+    const stored = localStorage.getItem('storeCart');
+    return stored ? JSON.parse(stored) : [];
+  }
+
+  function saveCart(cart: CartItem[]): void {
+    localStorage.setItem('storeCart', JSON.stringify(cart));
+  }
+
+  function addToCart(item: Omit<CartItem, 'quantity'>): void {
+    const cart = getCart();
+    const existing = cart.find(
+      (i) => i.itemId === item.itemId && i.variationId === item.variationId
+    );
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push({ ...item, quantity: 1 });
+    }
+    saveCart(cart);
+    alert(`Added ${item.name} to cart!`);
+  }
+
+  document.querySelectorAll('.add-to-cart-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const target = e.currentTarget as HTMLButtonElement;
+      const itemId = target.dataset.itemId!;
+      const variationId = target.dataset.variationId!;
+      const name = target.dataset.name!;
+      const priceCents = parseInt(target.dataset.price!, 10);
+      addToCart({ itemId, variationId, name, priceCents });
+    });
+  });
+</script>

@@ -16,8 +16,9 @@
     "@tailwindcss/cli": "^4.2.1",
     "@tailwindcss/vite": "^4.2.1",
     "astro": "^6.0.4",
-    "astrojs": "^0.1.3",
+    "astrojs": "^0.1.1",
     "resend": "^6.9.4",
+    "square": "^44.0.1",
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {

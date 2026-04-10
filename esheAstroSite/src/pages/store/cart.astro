@@ -1,0 +1,174 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Cart - Life's Little Things Store">
+  <section class="my-12 px-4">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-6xl font-title font-bold text-primary text-center mb-6">Your Cart</h1>
+
+      <div id="cart-container">
+        <!-- Cart items will be rendered here by JavaScript -->
+      </div>
+
+      <div class="mt-8 text-center">
+        <a href="/store" class="text-primary hover:underline">← Continue Shopping</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  interface CartItem {
+    itemId: string;
+    variationId: string;
+    name: string;
+    priceCents: number;
+    quantity: number;
+  }
+
+  function getCart(): CartItem[] {
+    const stored = localStorage.getItem('storeCart');
+    return stored ? JSON.parse(stored) : [];
+  }
+
+  function saveCart(cart: CartItem[]): void {
+    localStorage.setItem('storeCart', JSON.stringify(cart));
+    window.dispatchEvent(new Event('storage'));
+  }
+
+  function formatPrice(cents: number): string {
+    return `$${(cents / 100).toFixed(2)}`;
+  }
+
+  function removeItem(itemId: string, variationId: string): void {
+    const cart = getCart().filter(
+      (i) => !(i.itemId === itemId && i.variationId === variationId)
+    );
+    saveCart(cart);
+    renderCart();
+  }
+
+  function updateQuantity(itemId: string, variationId: string, quantity: number): void {
+    if (quantity < 1) {
+      removeItem(itemId, variationId);
+      return;
+    }
+    const cart = getCart();
+    const item = cart.find(
+      (i) => i.itemId === itemId && i.variationId === variationId
+    );
+    if (item) {
+      item.quantity = quantity;
+      saveCart(cart);
+      renderCart();
+    }
+  }
+
+  function renderCart(): void {
+    const container = document.getElementById('cart-container');
+    const cart = getCart();
+
+    if (cart.length === 0) {
+      container!.innerHTML = `
+        <div class="text-center py-12 bg-white rounded-lg shadow">
+          <p class="text-xl text-text mb-4">Your cart is empty</p>
+          <a href="/store" class="inline-block bg-primary text-white px-6 py-3 rounded font-bold hover:bg-opacity-90 transition">
+            Start Shopping
+          </a>
+        </div>
+      `;
+      return;
+    }
+
+    const totalCents = cart.reduce((sum, item) => sum + item.priceCents * item.quantity, 0);
+
+    container!.innerHTML = `
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="divide-y divide-gray-200">
+          ${cart
+            .map(
+              (item) => `
+            <div class="p-4 flex items-center gap-4">
+              <div class="flex-1">
+                <h3 class="font-bold text-lg">${item.name}</h3>
+                <p class="text-gray-600">${formatPrice(item.priceCents)} each</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button
+                  class="quantity-btn w-8 h-8 rounded bg-gray-200 hover:bg-gray-300 font-bold"
+                  data-action="decrease"
+                  data-item-id="${item.itemId}"
+                  data-variation-id="${item.variationId}"
+                >-</button>
+                <span class="w-8 text-center font-bold">${item.quantity}</span>
+                <button
+                  class="quantity-btn w-8 h-8 rounded bg-gray-200 hover:bg-gray-300 font-bold"
+                  data-action="increase"
+                  data-item-id="${item.itemId}"
+                  data-variation-id="${item.variationId}"
+                >+</button>
+              </div>
+              <div class="text-right min-w-[100px]">
+                <p class="font-bold text-lg">${formatPrice(item.priceCents * item.quantity)}</p>
+                <button
+                  class="remove-btn text-red-500 text-sm hover:underline"
+                  data-item-id="${item.itemId}"
+                  data-variation-id="${item.variationId}"
+                >Remove</button>
+              </div>
+            </div>
+          `
+            )
+            .join('')}
+        </div>
+        <div class="p-4 bg-gray-50 border-t">
+          <div class="flex justify-between items-center mb-4">
+            <span class="text-xl font-bold">Total:</span>
+            <span class="text-2xl font-bold text-primary">${formatPrice(totalCents)}</span>
+          </div>
+          <button
+            id="checkout-btn"
+            class="w-full bg-primary text-white py-4 rounded-lg font-bold text-lg hover:bg-opacity-90 transition"
+          >
+            Proceed to Checkout
+          </button>
+          <p class="text-center text-sm text-gray-500 mt-2">
+            Checkout coming soon - this is a test store
+          </p>
+        </div>
+      </div>
+    `;
+
+    // Add event listeners
+    document.querySelectorAll('.quantity-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLButtonElement;
+        const itemId = target.dataset.itemId!;
+        const variationId = target.dataset.variationId!;
+        const action = target.dataset.action!;
+        const cart = getCart();
+        const item = cart.find(
+          (i) => i.itemId === itemId && i.variationId === variationId
+        );
+        if (item) {
+          const newQty = action === 'increase' ? item.quantity + 1 : item.quantity - 1;
+          updateQuantity(itemId, variationId, newQty);
+        }
+      });
+    });
+
+    document.querySelectorAll('.remove-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLButtonElement;
+        removeItem(target.dataset.itemId!, target.dataset.variationId!);
+      });
+    });
+
+    document.getElementById('checkout-btn')?.addEventListener('click', () => {
+      alert('Checkout will be implemented in the next phase!');
+    });
+  }
+
+  renderCart();
+</script>
