@@ -21,10 +21,22 @@ function slugify(input: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
+
+// Helper to safely stringify objects with BigInt values
+function safeStringify(obj: any) {
+  return JSON.stringify(obj, (key, value) =>
+    typeof value === 'bigint' ? value.toString() : value,
+    2
+  );
+}
+
 export const GET: APIRoute = async () => {
   try {
+    console.log("[Catalog API] Handler invoked");
     const locationId = import.meta.env.SQUARE_LOCATION_ID;
+    console.log("[Catalog API] SQUARE_LOCATION_ID:", locationId);
     if (!locationId) {
+      console.error("[Catalog API] Missing SQUARE_LOCATION_ID");
       return new Response(
         JSON.stringify({ error: "Missing SQUARE_LOCATION_ID" }),
         { status: 500, headers: { "Content-Type": "application/json" } }
@@ -32,15 +44,18 @@ export const GET: APIRoute = async () => {
     }
 
     const square = getSquareClient();
+    console.log("[Catalog API] Square client created");
 
     // Use search to get items with related objects
     const catalogRes = await square.catalog.search({
       objectTypes: ["ITEM"],
       includeRelatedObjects: true,
     });
+    console.log("[Catalog API] catalogRes:", safeStringify(catalogRes));
 
     const objects = catalogRes.objects ?? [];
     const related = catalogRes.relatedObjects ?? [];
+    console.log(`[Catalog API] Found ${objects.length} items, ${related.length} related objects`);
 
     const categoriesById = new Map<string, { id: string; name: string; slug: string }>();
     const imageUrlById = new Map<string, string>();
@@ -58,6 +73,8 @@ export const GET: APIRoute = async () => {
         imageUrlById.set(obj.id, (obj as any).imageData.url as string);
       }
     }
+    console.log(`[Catalog API] categoriesById:`, Array.from(categoriesById.values()));
+    console.log(`[Catalog API] imageUrlById:`, Array.from(imageUrlById.entries()));
 
     const products = [];
     const allVariationIds: string[] = [];
@@ -103,11 +120,14 @@ export const GET: APIRoute = async () => {
         variations,
       });
     }
+    console.log(`[Catalog API] products:`, products);
+    console.log(`[Catalog API] allVariationIds:`, allVariationIds);
 
     const invRes = await square.inventory.batchGetCounts({
       catalogObjectIds: allVariationIds,
       locationIds: [locationId],
     });
+    console.log(`[Catalog API] invRes:`, safeStringify(invRes));
 
     const counts = new Map<string, number>();
     // batchGetCounts returns a pager; use its data array for the current page
@@ -117,6 +137,7 @@ export const GET: APIRoute = async () => {
       if (!id) continue;
       counts.set(id, Number(c.quantity ?? "0"));
     }
+    console.log(`[Catalog API] counts:`, Array.from(counts.entries()));
 
     const hydratedProducts = products.map((p) => ({
       ...p,
@@ -125,6 +146,7 @@ export const GET: APIRoute = async () => {
         return { ...v, available, inStock: available > 0 };
       }),
     }));
+    console.log(`[Catalog API] hydratedProducts:`, hydratedProducts);
 
     const categoryMap = new Map<string, { id: string; slug: string; name: string }>();
     for (const p of hydratedProducts) {
@@ -136,6 +158,7 @@ export const GET: APIRoute = async () => {
         });
       }
     }
+    console.log(`[Catalog API] categoryMap:`, Array.from(categoryMap.values()));
 
     return new Response(
       JSON.stringify({
@@ -146,7 +169,7 @@ export const GET: APIRoute = async () => {
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (err: any) {
-    console.error("Catalog fetch error:", err);
+    console.error("[Catalog API] Catalog fetch error:", err, err?.stack);
     return new Response(
       JSON.stringify({ error: err?.message ?? "Catalog fetch failed" }),
       { status: 500, headers: { "Content-Type": "application/json" } }
