@@ -55,7 +55,7 @@ const allProducts = catalogData?.products ?? [];
 const currentCategory = categories.find((c) => c.slug === categorySlug);
 
 // Filter products for this category
-const products = currentCategory
+const products = currentCategory && categorySlug
   ? allProducts.filter((p) => p.categorySlugs?.includes(categorySlug))
   : [];
 
