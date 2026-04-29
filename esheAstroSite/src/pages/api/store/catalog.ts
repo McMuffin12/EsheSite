@@ -83,12 +83,17 @@ export const GET: APIRoute = async () => {
       if (item.type !== "ITEM" || !item.id || !(item as any).itemData) continue;
 
       const itemData = (item as any).itemData as Square.CatalogItem;
-      const categoryId = itemData.categoryId ?? "uncategorized";
-      const category = categoriesById.get(categoryId) ?? {
-        id: "uncategorized",
-        name: "Uncategorized",
-        slug: "uncategorized",
-      };
+      const rawCategoryIds = [
+        itemData.reportingCategory?.id,
+        ...(itemData.categories ?? []).map((c) => c.id),
+        itemData.categoryId,
+      ].filter(Boolean) as string[];
+      const uniqueCategoryIds = Array.from(new Set(rawCategoryIds));
+      const resolvedCategoryIds = uniqueCategoryIds.filter((id) => categoriesById.has(id));
+      const categoryIds = resolvedCategoryIds.length > 0 ? resolvedCategoryIds : ["uncategorized"];
+      const categorySlugs = categoryIds.map(
+        (id) => categoriesById.get(id)?.slug ?? "uncategorized"
+      );
 
       const imageId = itemData.imageIds?.[0];
       const imageUrl = imageId ? imageUrlById.get(imageId) ?? null : null;
@@ -114,8 +119,8 @@ export const GET: APIRoute = async () => {
         itemId: item.id,
         name: itemData.name ?? "Unnamed Item",
         description: itemData.description ?? "",
-        categoryId: category.id,
-        categorySlug: category.slug,
+        categoryIds,
+        categorySlugs,
         imageUrl,
         variations,
       });
@@ -150,12 +155,14 @@ export const GET: APIRoute = async () => {
 
     const categoryMap = new Map<string, { id: string; slug: string; name: string }>();
     for (const p of hydratedProducts) {
-      if (!categoryMap.has(p.categoryId)) {
-        categoryMap.set(p.categoryId, {
-          id: p.categoryId,
-          slug: p.categorySlug,
-          name: categoriesById.get(p.categoryId)?.name ?? "Uncategorized",
-        });
+      for (const categoryId of p.categoryIds ?? ["uncategorized"]) {
+        if (!categoryMap.has(categoryId)) {
+          categoryMap.set(categoryId, {
+            id: categoryId,
+            slug: categoriesById.get(categoryId)?.slug ?? "uncategorized",
+            name: categoriesById.get(categoryId)?.name ?? "Uncategorized",
+          });
+        }
       }
     }
     console.log(`[Catalog API] categoryMap:`, Array.from(categoryMap.values()));

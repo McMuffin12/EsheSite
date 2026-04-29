@@ -14,8 +14,8 @@ interface Product {
   itemId: string;
   name: string;
   description: string;
-  categoryId: string;
-  categorySlug: string;
+  categoryIds: string[];
+  categorySlugs: string[];
   imageUrl: string | null;
   variations: Variation[];
 }
@@ -56,7 +56,7 @@ const currentCategory = categories.find((c) => c.slug === categorySlug);
 
 // Filter products for this category
 const products = currentCategory
-  ? allProducts.filter((p) => p.categorySlug === categorySlug)
+  ? allProducts.filter((p) => p.categorySlugs?.includes(categorySlug))
   : [];
 
 function formatPrice(cents: number): string {

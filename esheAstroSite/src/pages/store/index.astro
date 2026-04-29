@@ -14,8 +14,8 @@ interface Product {
   itemId: string;
   name: string;
   description: string;
-  categoryId: string;
-  categorySlug: string;
+  categoryIds: string[];
+  categorySlugs: string[];
   imageUrl: string | null;
   variations: Variation[];
 }
