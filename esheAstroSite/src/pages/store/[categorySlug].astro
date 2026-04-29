@@ -160,6 +160,7 @@ function formatPrice(cents: number): string {
                         data-variation-id={firstVariation?.variationId}
                         data-name={product.name}
                         data-price={firstVariation?.priceCents}
+                        data-available={firstVariation?.available}
                       >
                         Add to Cart
                       </button>
@@ -200,11 +201,20 @@ function formatPrice(cents: number): string {
     localStorage.setItem('storeCart', JSON.stringify(cart));
   }
 
-  function addToCart(item: Omit<CartItem, 'quantity'>): void {
+  function addToCart(item: Omit<CartItem, 'quantity'>, available?: number): void {
     const cart = getCart();
     const existing = cart.find(
       (i) => i.itemId === item.itemId && i.variationId === item.variationId
     );
+    const nextQuantity = (existing?.quantity ?? 0) + 1;
+    if (typeof available === 'number' && available <= 0) {
+      alert(`${item.name} is out of stock.`);
+      return;
+    }
+    if (typeof available === 'number' && available > 0 && nextQuantity > available) {
+      alert(`Only ${available} of ${item.name} left in stock.`);
+      return;
+    }
     if (existing) {
       existing.quantity += 1;
     } else {
@@ -221,7 +231,9 @@ function formatPrice(cents: number): string {
       const variationId = target.dataset.variationId!;
       const name = target.dataset.name!;
       const priceCents = parseInt(target.dataset.price!, 10);
-      addToCart({ itemId, variationId, name, priceCents });
+      const available = Number.parseInt(target.dataset.available || '', 10);
+      const maxAvailable = Number.isFinite(available) ? available : undefined;
+      addToCart({ itemId, variationId, name, priceCents }, maxAvailable);
     });
   });
 </script>

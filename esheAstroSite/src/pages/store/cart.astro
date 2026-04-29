@@ -1,9 +1,18 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  FREE_SHIPPING_THRESHOLD_CENTS,
+  SHIPPING_FEE_CENTS,
+} from "../../lib/store/shipping";
+
+const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+const shippingNote = `Shipping is ${formatPrice(SHIPPING_FEE_CENTS)} and free over ${formatPrice(
+  FREE_SHIPPING_THRESHOLD_CENTS
+)}. Taxes calculated at payment.`;
 ---
 
 <BaseLayout title="Cart - Life's Little Things Store">
-  <section class="my-12 px-4">
+  <section class="my-12 px-4" data-shipping-note={shippingNote}>
     <div class="max-w-4xl mx-auto">
       <h1 class="text-6xl font-title font-bold text-primary text-center mb-6">Your Cart</h1>
 
@@ -26,6 +35,22 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     priceCents: number;
     quantity: number;
   }
+
+  interface CatalogVariation {
+    variationId: string;
+    available: number;
+  }
+
+  interface CatalogProduct {
+    variations: CatalogVariation[];
+  }
+
+  interface CatalogData {
+    products: CatalogProduct[];
+  }
+
+  let availabilityByVariation: Record<string, number> = {};
+  let checkoutBlocked = false;
 
   function getCart(): CartItem[] {
     const stored = localStorage.getItem('storeCart');
@@ -59,15 +84,49 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       (i) => i.itemId === itemId && i.variationId === variationId
     );
     if (item) {
+      const available = availabilityByVariation[variationId];
+      if (Number.isFinite(available) && available <= 0) {
+        alert(`${item.name} is out of stock.`);
+        removeItem(itemId, variationId);
+        return;
+      }
+      if (Number.isFinite(available) && quantity > available) {
+        alert(`Only ${available} of ${item.name} left in stock.`);
+        quantity = available;
+      }
       item.quantity = quantity;
       saveCart(cart);
       renderCart();
     }
   }
 
+  async function loadAvailability(): Promise<void> {
+    try {
+      const response = await fetch('/api/store/catalog');
+      if (!response.ok) throw new Error('Failed to fetch catalog');
+      const data = (await response.json()) as CatalogData;
+      const map: Record<string, number> = {};
+
+      (data.products || []).forEach((product) => {
+        (product.variations || []).forEach((variation) => {
+          if (variation?.variationId) {
+            map[variation.variationId] = Number(variation.available ?? 0);
+          }
+        });
+      });
+
+      availabilityByVariation = map;
+    } catch {
+      availabilityByVariation = {};
+    }
+  }
+
   function renderCart(): void {
     const container = document.getElementById('cart-container');
     const cart = getCart();
+    const shippingNote =
+      (document.querySelector('section[data-shipping-note]') as HTMLElement)?.dataset
+        .shippingNote ?? '';
 
     if (cart.length === 0) {
       container!.innerHTML = `
@@ -81,46 +140,84 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       return;
     }
 
+    const stockIssues = cart
+      .map((item) => {
+        const available = availabilityByVariation[item.variationId];
+        if (Number.isFinite(available) && item.quantity > available) {
+          return { name: item.name, available };
+        }
+        return null;
+      })
+      .filter((issue) => issue !== null) as Array<{ name: string; available: number }>;
+
+    checkoutBlocked = stockIssues.length > 0;
+    const warningMarkup = checkoutBlocked
+      ? `
+        <div class="bg-amber-100 border border-amber-200 text-amber-900 px-4 py-3 rounded mb-4">
+          Some items exceed current stock. Please adjust your cart before checkout.
+        </div>
+      `
+      : '';
+
     const totalCents = cart.reduce((sum, item) => sum + item.priceCents * item.quantity, 0);
+
+    const itemRows = cart
+      .map((item) => {
+        const available = availabilityByVariation[item.variationId];
+        const hasAvailability = Number.isFinite(available);
+        const limitReached = hasAvailability && item.quantity >= available;
+        const stockNote = hasAvailability
+          ? available === 0
+            ? 'Out of stock'
+            : `Only ${available} left`
+          : '';
+        const increaseClasses = limitReached ? 'opacity-50 cursor-not-allowed' : '';
+
+        return `
+          <div class="p-4 flex items-center gap-4">
+            <div class="flex-1">
+              <h3 class="font-bold text-lg">${item.name}</h3>
+              <p class="text-gray-600">${formatPrice(item.priceCents)} each</p>
+              ${
+                stockNote
+                  ? `<p class="text-xs text-amber-700 mt-1">${stockNote}</p>`
+                  : ''
+              }
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                class="quantity-btn w-8 h-8 rounded bg-gray-200 hover:bg-gray-300 font-bold"
+                data-action="decrease"
+                data-item-id="${item.itemId}"
+                data-variation-id="${item.variationId}"
+              >-</button>
+              <span class="w-8 text-center font-bold">${item.quantity}</span>
+              <button
+                class="quantity-btn w-8 h-8 rounded bg-gray-200 hover:bg-gray-300 font-bold ${increaseClasses}"
+                data-action="increase"
+                data-item-id="${item.itemId}"
+                data-variation-id="${item.variationId}"
+                ${limitReached ? 'disabled' : ''}
+              >+</button>
+            </div>
+            <div class="text-right min-w-[100px]">
+              <p class="font-bold text-lg">${formatPrice(item.priceCents * item.quantity)}</p>
+              <button
+                class="remove-btn text-red-500 text-sm hover:underline"
+                data-item-id="${item.itemId}"
+                data-variation-id="${item.variationId}"
+              >Remove</button>
+            </div>
+          </div>
+        `;
+      })
+      .join('');
 
     container!.innerHTML = `
       <div class="bg-white rounded-lg shadow overflow-hidden">
+        ${warningMarkup}
         <div class="divide-y divide-gray-200">
-          ${cart
-            .map(
-              (item) => `
-            <div class="p-4 flex items-center gap-4">
-              <div class="flex-1">
-                <h3 class="font-bold text-lg">${item.name}</h3>
-                <p class="text-gray-600">${formatPrice(item.priceCents)} each</p>
-              </div>
-              <div class="flex items-center gap-2">
-                <button
-                  class="quantity-btn w-8 h-8 rounded bg-gray-200 hover:bg-gray-300 font-bold"
-                  data-action="decrease"
-                  data-item-id="${item.itemId}"
-                  data-variation-id="${item.variationId}"
-                >-</button>
-                <span class="w-8 text-center font-bold">${item.quantity}</span>
-                <button
-                  class="quantity-btn w-8 h-8 rounded bg-gray-200 hover:bg-gray-300 font-bold"
-                  data-action="increase"
-                  data-item-id="${item.itemId}"
-                  data-variation-id="${item.variationId}"
-                >+</button>
-              </div>
-              <div class="text-right min-w-[100px]">
-                <p class="font-bold text-lg">${formatPrice(item.priceCents * item.quantity)}</p>
-                <button
-                  class="remove-btn text-red-500 text-sm hover:underline"
-                  data-item-id="${item.itemId}"
-                  data-variation-id="${item.variationId}"
-                >Remove</button>
-              </div>
-            </div>
-          `
-            )
-            .join('')}
+          ${itemRows}
         </div>
         <div class="p-4 bg-gray-50 border-t">
           <div class="flex justify-between items-center mb-4">
@@ -129,12 +226,15 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           </div>
           <button
             id="checkout-btn"
-            class="w-full bg-primary text-white py-4 rounded-lg font-bold text-lg hover:bg-opacity-90 transition"
+            class="w-full bg-primary text-white py-4 rounded-lg font-bold text-lg hover:bg-opacity-90 transition ${
+              checkoutBlocked ? 'opacity-60 cursor-not-allowed' : ''
+            }"
+            ${checkoutBlocked ? 'disabled' : ''}
           >
             Proceed to Checkout
           </button>
           <p class="text-center text-sm text-gray-500 mt-2">
-            Checkout coming soon - this is a test store
+            ${shippingNote}
           </p>
         </div>
       </div>
@@ -166,9 +266,22 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     });
 
     document.getElementById('checkout-btn')?.addEventListener('click', () => {
-      alert('Checkout will be implemented in the next phase!');
+      if (checkoutBlocked) {
+        alert('Please update your cart to match available stock before checkout.');
+        return;
+      }
+      window.location.href = '/store/checkout';
     });
   }
 
-  renderCart();
+  async function initCart(): Promise<void> {
+    await loadAvailability();
+    renderCart();
+  }
+
+  window.addEventListener('storage', () => {
+    renderCart();
+  });
+
+  initCart();
 </script>
