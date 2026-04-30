@@ -1,0 +1,20 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HeroBanner from "../components/HeroBanner.astro";
+---
+
+<BaseLayout title="Home:Life's Little Things">
+	<section class="my-12 px-4">
+		<h2 class="font-title text-primary text-6xl font-bold mb-6 text-center">Featured</h2>
+		<HeroBanner
+			image="/Home/HeroBanners/MonkeyPuppet.jpeg"
+			title="Keychain Puppets!!"
+			subtitle="Check out our new line of keychain puppets, perfect for adding a touch of fun to your keys or bags!"
+			description="Get your today!"
+			align="left"
+		/>
+	</section>
+	<section class="my-12 px-4">
+		<h2 class="font-title text-primary text-6xl font-bold mb-6 text-center">Gallery</h2>
+	</section>
+</BaseLayout>
