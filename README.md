@@ -43,4 +43,3 @@ Additional commands:
 - Square-backed storefront with category filtering and inventory-aware product listing.
 - Cart with quantity controls, stock checks, and shipping threshold messaging.
 - Two-step checkout (shipping + payment) with Square card processing and order success page.
-- Square webhook endpoint for payment notifications.
