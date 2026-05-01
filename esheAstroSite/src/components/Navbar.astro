@@ -18,29 +18,46 @@ import DropdownMenu from "./DropdownMenu.astro";
           <a href="/about" class="px-3 py-2 rounded hover:bg-primary transition">About</a>
           <a href="/contact" class="px-3 py-2 rounded hover:bg-primary transition">Contact Me!</a>
           <div class="relative group flex items-center">
-            <button class="px-3 py-2 rounded hover:bg-primary transition flex items-center">
+            <a href="/store" class="px-3 py-2 rounded hover:bg-primary transition flex items-center">
               Store
               <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path d="M19 9l-7 7-7-7"/>
               </svg>
-            </button>
+            </a>
             <div class="absolute left-0 top-full opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition z-50">
               <DropdownMenu
                 items={[ 
-                  { href: "/community/forum", imgSrc: "/Shared/GalleryImages/greenCreamBeanie.jpeg", imgAlt: "Green Cream Beanie", label: "Beanies" },
-                  { href: "/community/events", imgSrc: "/Shared/GalleryImages/kittyDressYellow.jpeg", imgAlt: "Amigurumi", label: "Amigurumi" },
-                  { href: "/community/events", imgSrc: "/Shared/GalleryImages/kissingWhales.jpeg", imgAlt: "Keychains", label: "Keychains" },
+                  { href: "/store/beanies", imgSrc: "/Shared/GalleryImages/greenCreamBeanie.jpeg", imgAlt: "Green Cream Beanie", label: "Beanies" },
+                  { href: "/store/amigurumi", imgSrc: "/Shared/GalleryImages/kittyDressYellow.jpeg", imgAlt: "Amigurumi", label: "Amigurumi" },
+                  { href: "/store/keychains", imgSrc: "/Shared/GalleryImages/kissingWhales.jpeg", imgAlt: "Keychains", label: "Keychains" },
                 ]}
               />
             </div>
           </div>
         </div>
-      <!-- <div class="flex items-center justify-end min-w-35">
-        <a href="/search" class="px-3 py-2 rounded hover:bg-primary transition">🔍</a>
-        <a href="/cart" class="px-3 py-2 rounded hover:bg-primary transition">🛒</a>
-      </div> -->
+      <div class="flex items-center justify-end min-w-35">
+        <a href="/store/cart" class="px-3 py-2 rounded hover:bg-primary transition relative">
+          🛒
+          <span id="cart-count" class="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+        </a>
+      </div>
     </div>
   </div>
 </nav>
+
+<script>
+  // Update cart count badge
+  function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem('storeCart') || '[]');
+    const count = cart.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
+    const badge = document.getElementById('cart-count');
+    if (badge) {
+      badge.textContent = count.toString();
+      badge.classList.toggle('hidden', count === 0);
+    }
+  }
+  updateCartCount();
+  window.addEventListener('storage', updateCartCount);
+</script>
 
 

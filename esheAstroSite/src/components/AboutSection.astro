@@ -1,0 +1,50 @@
+---
+const {
+  image,
+  title = "",
+  paragraphs = [],
+  align = "left",
+} = Astro.props;
+
+// prop setting to fine tune image overlap
+const directionClass = align === "right" ? "md:flex-row-reverse" : "md:flex-row";
+const panelPaddingClass = align === "right"
+  ? "md:pl-20 md:pr-12"
+  : "md:pr-20 md:pl-12";
+const overlapPercent = 24;
+const imageOverlapX = align === "right" ? `${overlapPercent}%` : `-${overlapPercent}%`;
+const groupOffsetX = align === "right" ? `-${overlapPercent / 2}%` : `${overlapPercent / 2}%`;
+const offsetStyle = `--image-overlap-x:${imageOverlapX};--group-offset-x:${groupOffsetX};`;
+---
+<section class="py-10 px-4 md:px-10">
+  {title && (
+    <h2 class="font-title text-primary text-5xl md:text-6xl font-bold text-center">
+      {title}
+    </h2>
+  )}
+
+  <div
+    class={`relative mx-auto mt-6 max-w-6xl flex flex-col ${directionClass} items-center md:items-stretch gap-6 md:gap-0 overflow-visible md:translate-x-(--group-offset-x)`}
+    style={offsetStyle}
+  >
+    <div class="md:w-7/12 w-full md:flex md:items-center">
+      <div class={`relative z-10 rounded-2xl bg-secondary shadow-lg p-6 md:py-12 flex flex-col justify-center ${panelPaddingClass}`}>
+        <div class="space-y-4">
+          {paragraphs.map((text: string) => (
+            <p class="font-description text-lg md:text-xl text-text/90">
+              {text}
+            </p>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="md:w-5/12 w-full flex justify-center relative z-20 translate-x-0 md:translate-x-(--image-overlap-x)"
+    >
+      <div class="w-full max-w-60 md:max-w-77.5 aspect-9/16 rounded-2xl shadow-lg overflow-hidden bg-secondary">
+        <img src={image} alt={title} class="w-full h-full object-cover" />
+      </div>
+    </div>
+  </div>
+</section>
