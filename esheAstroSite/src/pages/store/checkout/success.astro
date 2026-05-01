@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+const url = new URL(Astro.request.url);
+const orderId = url.searchParams.get("orderId");
+const paymentId = url.searchParams.get("paymentId");
+---
+
+<BaseLayout title="Order Complete | Life's Little Things">
+  <section class="my-12 px-4">
+    <div class="max-w-3xl mx-auto text-center bg-white rounded-lg shadow-lg p-8">
+      <h1 class="text-6xl font-title font-bold text-primary mb-4">Thank you!</h1>
+      <p class="text-text mb-6">Your order has been received and is being prepared.</p>
+
+      {orderId && (
+        <p class="text-sm text-gray-600 mb-2">Order ID: {orderId}</p>
+      )}
+      {paymentId && (
+        <p class="text-sm text-gray-600">Payment ID: {paymentId}</p>
+      )}
+
+      <div class="mt-8">
+        <a
+          href="/store"
+          class="inline-block bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-opacity-90 transition"
+        >
+          Continue Shopping
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import HeroSlideshow from "../components/HeroSlideshow.astro";
 import HeroBanner from "../components/HeroBanner.astro";
 import ImageGallery from "../components/ImageGallery.astro";
+import AboutSection from "../components/AboutSection.astro";
 ---
 
 <BaseLayout title="Home:Life's Little Things">
@@ -26,6 +27,19 @@ import ImageGallery from "../components/ImageGallery.astro";
 			align="left"
 		/>
 	</section>
+
+	<section class="my-12 px-4">
+		<AboutSection 
+			title="A Little About Me"
+			paragraphs={[
+				"Hi, I’m Eshe Snow. I currently live in Russellville, Arkansas, and frequently travel back and forth between there and Bentonville. I’ve been happily married to my husband Brady since October 2025.",
+				"I’m a proud introvert who finds joy in a variety of creative hobbies, including jewelry making, painting, baking, and — my absolute favorite — crocheting. When I’m not working on a crochet project, you’ll often find me playing video games or experimenting in the kitchen."
+			]}
+			image="/About/IMG_20260430_203445.jpg"
+			align="right">
+		</AboutSection>
+	</section>
+
 	<section class="my-12 px-4">
 		<h2 class="font-title text-primary text-6xl font-bold mb-6 text-center">Gallery</h2>
 		<ImageGallery images={[
