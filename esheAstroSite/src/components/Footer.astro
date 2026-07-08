@@ -7,7 +7,11 @@ const linkClass = "hover:text-primary transition-colors font-description";
   <div class="flex flex-wrap justify-between max-w-6xl mx-auto gap-8 md:gap-6 px-4">
     <div class="flex-1 min-w-50 mb-6">
       <h2 class="mb-4 font-title font-bold text-lg">Life's Little Things</h2>
-      <p class="mb-4 font-description leading-relaxed">Life's little Things is dedicated to creating stuffed animals and other handcrafted pieces to remind people that the little things matter most - Handmade with love and care in every stitch</p>
+      <p class="mb-4 font-description leading-relaxed">Life's Little Things, a trade name of Eshe M. Snow, creates stuffed animals and handcrafted pieces with care in every stitch.</p>
+      <address class="not-italic mb-4 font-description leading-relaxed text-sm">
+        18 Newlyn Ln, Bella Vista, AR 72715<br />
+        <a href="mailto:lltcrafts22@gmail.com" class={linkClass}>lltcrafts22@gmail.com</a>
+      </address>
       <div class="flex gap-3 mt-2">
         <a href="https://www.instagram.com/lifes._.littlethings._.crochet?igsh=ZHk4N2U3ZGRiZ3N5&utm_source=qr" aria-label="Instagram" class={linkClass}>
           <Icon name="mdi:instagram" width="20" height="20" />
@@ -15,31 +19,34 @@ const linkClass = "hover:text-primary transition-colors font-description";
         <a href="https://www.pinterest.com/lltcrafts/?invite_code=6419bd7c4cc94aa9aeac2392fabaf553&sender=1011902747433568532" aria-label="Pinterest" class={linkClass}>
           <Icon name="mdi:pinterest" width="20" height="20" />
         </a>
-        <a href="" aria-label="Facebook" class={linkClass}>
+        <span aria-hidden="true" class="inline-flex items-center text-text/60">
           <Icon name="mdi:facebook" width="20" height="20" />
-        </a>
+        </span>
       </div>
     </div>
     <div class="flex-1 min-w-50 mb-6">
       <h3 class="mb-4 font-title font-bold">Shop</h3>
       <ul class="list-none p-0 m-0">
-        <li class="mb-2"><a href="" class={linkClass}>All Products</a></li>
-        <li class="mb-2"><a href="" class={linkClass}>Beanies</a></li>
-        <li class="mb-2"><a href="" class={linkClass}>Amigurumi</a></li>
-        <li class="mb-2"><a href="" class={linkClass}>Keychains</a></li>
+        <li class="mb-2"><a href="/store" class={linkClass}>All Products</a></li>
+        <li class="mb-2"><a href="/store/cart" class={linkClass}>Cart</a></li>
       </ul>
     </div>
     <div class="flex-1 min-w-50 mb-6">
       <h3 class="mb-4 font-title font-bold">Links</h3>
       <ul class="list-none p-0 m-0">
-        <li class="mb-2"><a href="" class={linkClass}>Contact</a></li>
+        <li class="mb-2"><a href="/contact" class={linkClass}>Contact</a></li>
         <li class="mb-2"><a href="/gallery" class={linkClass}>Gallery</a></li>
-        <li class="mb-2"><a href="" class={linkClass}>About Me</a></li>
+        <li class="mb-2"><a href="/about" class={linkClass}>About Me</a></li>
+        <li class="mb-2"><a href="/disclosures" class={linkClass}>Business Disclosures</a></li>
+        <li class="mb-2"><a href="/privacy" class={linkClass}>Privacy Policy</a></li>
+        <li class="mb-2"><a href="/terms" class={linkClass}>Terms and Conditions</a></li>
+        <li class="mb-2"><a href="/refund-return-policy" class={linkClass}>Refund & Return Policy</a></li>
+        <li class="mb-2"><a href="/shipping-policy" class={linkClass}>Shipping Policy</a></li>
       </ul>
     </div>
     <div class="flex-1 min-w-50 mb-6">
       <h3 class="mb-4 font-title font-bold">Stay Connected!</h3>
-      <p class="mb-4 font-description leading-relaxed">Follow me on Instagram, Facebook, or Pinterest to stay up to date on the projects im currently working on!</p>
+      <p class="mb-4 font-description leading-relaxed">Follow Life's Little Things on Instagram, Facebook, or Pinterest to stay up to date on current projects.</p>
     </div>
   </div>
   <div class="border-t border-primary text-left mt-6 pt-4 text-sm text-text px-4">

@@ -25,7 +25,7 @@ const defaultSlides: Slide[] = [
 
 const { slides = defaultSlides }: { slides?: Slide[] } = Astro.props;
 ---
-<div id="hero-slideshow" class="relative w-full aspect-16/6 min-h-50 flex items-center justify-center overflow-hidden rounded-lg shadow-lg m-2.5 box-border max-w-[calc(100vw-20px)]">
+<div id="hero-slideshow" class="relative w-full aspect-16/6 min-h-50 flex items-center justify-center overflow-hidden rounded-lg shadow-lg m-2.5 box-border max-w-[calc(100vw-20px)]" role="region" aria-roledescription="carousel" aria-label="Featured products slideshow">
   {slides.map((slide: Slide, idx: number) => (
     <div
       class={`absolute inset-0 transition-opacity duration-700 ${idx === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
@@ -40,24 +40,36 @@ const { slides = defaultSlides }: { slides?: Slide[] } = Astro.props;
       </div>
     </div>
   ))}
+  <div class="absolute top-4 right-4 z-20 flex gap-2">
+    <button
+      id="slideshow-toggle"
+      type="button"
+      class="rounded-full bg-secondary/90 px-3 py-2 text-sm font-bold text-white shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-secondary"
+      aria-pressed="false"
+    >
+      Pause slideshow
+    </button>
+  </div>
   <div id="slideshow-dots" class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-20">
     {slides.map((_: Slide, idx: number) => (
       <button
         type="button"
-        class="w-2 h-2 rounded-full border-2 border-white bg-white/60 hover:bg-white/90 transition-colors duration-200"
+        class="w-3 h-3 rounded-full border-2 border-white bg-white/60 hover:bg-white/90 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-secondary"
         data-dot={idx}
         aria-label={`Go to slide ${idx + 1}`}
-        style="outline:none;"
       ></button>
     ))}
   </div>
   </div>
 <script type="module">
   const slideshow = document.getElementById('hero-slideshow');
+  const toggleButton = document.getElementById('slideshow-toggle');
   const slides = slideshow.querySelectorAll('[data-slide]');
   const dots = document.querySelectorAll('#slideshow-dots [data-dot]');
   let current = 0;
   let interval = null;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let isPaused = prefersReducedMotion.matches;
 
   function showSlide(idx) {
     slides.forEach((slide, i) => {
@@ -106,9 +118,34 @@ const { slides = defaultSlides }: { slides?: Slide[] } = Astro.props;
 
   function resetInterval() {
     clearInterval(interval);
-    interval = setInterval(nextSlide, 5000);
+    if (!isPaused) {
+      interval = setInterval(nextSlide, 5000);
+    }
+  }
+
+  function updateToggle() {
+    if (!toggleButton) return;
+    toggleButton.setAttribute('aria-pressed', String(isPaused));
+    toggleButton.textContent = isPaused ? 'Play slideshow' : 'Pause slideshow';
   }
 
   updateDots();
-  interval = setInterval(nextSlide, 5000);
+  updateToggle();
+  if (!isPaused) {
+    interval = setInterval(nextSlide, 5000);
+  }
+
+  if (toggleButton) {
+    toggleButton.addEventListener('click', () => {
+      isPaused = !isPaused;
+      updateToggle();
+      resetInterval();
+    });
+  }
+
+  prefersReducedMotion.addEventListener('change', () => {
+    isPaused = prefersReducedMotion.matches;
+    updateToggle();
+    resetInterval();
+  });
 </script>

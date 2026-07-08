@@ -6,25 +6,25 @@ import DropdownMenu from "./DropdownMenu.astro";
     <div class="flex h-16 items-center w-full max-w-7xl mx-auto">
       <!-- Left: Logo -->
       <div class="flex items-center justify-center min-w-35">
-        <a href="/" class="flex items-center max-w-100 h-16">
+        <a href="/" class="flex items-center max-w-100 h-16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-secondary rounded">
           <img src="/Shared/RECTANGLE LOGO COLOR.png" alt="Lifes Little Things Logo" class="object-contain h-full w-auto" />
         </a>
       </div>
       <!-- Center: Navigation Links -->
       <div class="flex-1 flex justify-center">
         <div class="flex items-center font-subtitle font-bold text-text min-w-0 gap-2">
-          <a href="/" class="px-3 py-2 rounded hover:bg-primary transition">Home</a>
-          <a href="/gallery" class="px-3 py-2 rounded hover:bg-primary transition">Project Gallery</a>
-          <a href="/about" class="px-3 py-2 rounded hover:bg-primary transition">About</a>
-          <a href="/contact" class="px-3 py-2 rounded hover:bg-primary transition">Contact Me!</a>
+          <a href="/" class="px-3 py-2 rounded hover:bg-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-secondary">Home</a>
+          <a href="/gallery" class="px-3 py-2 rounded hover:bg-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-secondary">Project Gallery</a>
+          <a href="/about" class="px-3 py-2 rounded hover:bg-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-secondary">About</a>
+          <a href="/contact" class="px-3 py-2 rounded hover:bg-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-secondary">Contact Me!</a>
           <div class="relative group flex items-center">
-            <a href="/store" class="px-3 py-2 rounded hover:bg-primary transition flex items-center">
+            <a href="/store" aria-haspopup="true" class="px-3 py-2 rounded hover:bg-primary transition flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-secondary">
               Store
               <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path d="M19 9l-7 7-7-7"/>
               </svg>
             </a>
-            <div class="absolute left-0 top-full opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition z-50">
+            <div class="absolute left-0 top-full opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto transition z-50">
               <DropdownMenu
                 items={[ 
                   { href: "/store/beanies", imgSrc: "/Shared/GalleryImages/greenCreamBeanie.jpeg", imgAlt: "Green Cream Beanie", label: "Beanies" },
@@ -36,7 +36,7 @@ import DropdownMenu from "./DropdownMenu.astro";
           </div>
         </div>
       <div class="flex items-center justify-end min-w-35">
-        <a href="/store/cart" class="px-3 py-2 rounded hover:bg-primary transition relative">
+        <a href="/store/cart" aria-label="View cart" class="px-3 py-2 rounded hover:bg-primary transition relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-secondary">
           🛒
           <span id="cart-count" class="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
         </a>

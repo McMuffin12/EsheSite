@@ -11,7 +11,7 @@ const squareScriptUrl =
 ---
 
 <BaseLayout title="Checkout - Payment | Life's Little Things">
-  <script src={squareScriptUrl}></script>
+  <script is:inline src={squareScriptUrl}></script>
 
   <section
     id="payment-section"
@@ -34,10 +34,24 @@ const squareScriptUrl =
 
           <div id="card-container" class="border border-gray-300 rounded-lg p-4 mb-6"></div>
 
+          <label class="flex items-start gap-3 mb-6 text-sm text-text">
+            <input
+              id="terms-checkbox"
+              type="checkbox"
+              class="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+            />
+            <span>
+              I agree to the <a href="/terms" class="text-primary hover:underline">Terms and Conditions</a> and understand the
+              <a href="/refund-return-policy" class="text-primary hover:underline">Refund & Return Policy</a> and
+              <a href="/shipping-policy" class="text-primary hover:underline">Shipping Policy</a>.
+            </span>
+          </label>
+
           <button
             id="pay-button"
             class="w-full bg-primary text-white py-4 rounded-lg font-bold text-lg hover:bg-opacity-90 transition"
             type="button"
+            disabled
           >
             Pay Now
           </button>
@@ -92,6 +106,7 @@ const squareScriptUrl =
   const payButton = document.getElementById("pay-button") as HTMLButtonElement;
   const errorEl = document.getElementById("payment-error") as HTMLElement;
   const statusEl = document.getElementById("payment-status") as HTMLElement;
+  const termsCheckbox = document.getElementById("terms-checkbox") as HTMLInputElement;
 
   let card: any = null;
   let orderId = "";
@@ -101,6 +116,11 @@ const squareScriptUrl =
     taxCents: 0,
     totalCents: 0,
   };
+
+  function updatePayButtonState(): void {
+    const ready = Boolean(orderId && card && getShipping() && termsCheckbox.checked);
+    payButton.disabled = !ready;
+  }
 
   function getCart(): CartItem[] {
     const stored = localStorage.getItem("storeCart");
@@ -257,6 +277,7 @@ const squareScriptUrl =
 
     renderSummary(cart, totals);
     setStatus("");
+    updatePayButtonState();
   }
 
   async function initPayments(): Promise<void> {
@@ -275,11 +296,22 @@ const squareScriptUrl =
     const payments = (window as any).Square.payments(appId, locationId);
     card = await payments.card();
     await card.attach("#card-container");
+    updatePayButtonState();
   }
+
+  termsCheckbox.addEventListener("change", () => {
+    clearError();
+    updatePayButtonState();
+  });
 
   payButton.addEventListener("click", async () => {
     clearError();
     const shipping = getShipping();
+
+    if (!termsCheckbox.checked) {
+      showError("Please agree to the Terms and Conditions before paying.");
+      return;
+    }
 
     if (!orderId || !card || !shipping) {
       showError("Checkout is not ready yet.");
@@ -337,6 +369,7 @@ const squareScriptUrl =
   async function init(): Promise<void> {
     await createOrLoadOrder();
     await initPayments();
+    updatePayButtonState();
   }
 
   init();
